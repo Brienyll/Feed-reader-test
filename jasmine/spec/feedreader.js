@@ -27,98 +27,89 @@ $(function() {
         });
 
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a URL defined
-         * and that the URL is not empty.
-         */
+       // check if url is defined
 
          it('url defined' ,function() {
              for(let feed of allFeeds) {
-                expect(allFeeds).toBeDefined();
-                expect(allFeeds.length).not.toBe(0);
+                expect(feed.url).toBeDefined();
+                expect(feed.url.length).not.toBe(0);
              }
          });
 
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a name defined
-         * and that the name is not empty.
-         */
+        // check ift he name is defined
+
+         it('name defined' ,function() {
+             for(let feed of allFeeds) {
+                expect(feed.name).toBeDefined();
+                expect(feed.name.length).not.toBe(0);
+             }
+         });
+
     });
 
-
-    /* TODO: Write a new test suite named "The menu" */
+    // Test suite Menu
 
     describe('The menu', function( ){
 
-        /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
-         */
-        it('is Hidden', function() {
-            const body = document.querySelector('body');
-            expect(body.classList.contains('menu hidden')).toBe(false);
+        // check menu-hidden is hidden
+
+        it('is hidden', function() {
+            expect($('body').hasClass('menu-hidden')).toBe(true);
         });
 
-         /* TODO: Write a test that ensures the menu changes
-          * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
-          * clicked and does it hide when clicked again.
-          */
+         // check if menu changes toggles on click
 
-          it('toggles', function() {
-            const body = document.querySelector('body');
-            const menu = document.querySelector('.menu-icon-link');
-            expect(body.classList.contains('menu-hidden')).toBe(true);
+          it('toggle', function() {
+            $('.menu-icon-link').click();
+            expect($('body').hasClass('menu-hidden')).toBe(false);
+            $('.menu-icon-link').click();
+            expect($('body').hasClass('menu-hidden')).toBe(true);
           });
     });
-    /* TODO: Write a new test suite named "Initial Entries" */
+   
+    // Test suite Initial Entries
 
     describe('Initial Entries', function() {
 
-        /* TODO: Write a test that ensures when the loadFeed
-         * function is called and completes its work, there is at least
-         * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
-         * the use of Jasmine's beforeEach and asynchronous done() function.
-         */
+       //Async - check that feed loads 
 
         beforeEach(function(done) {
             loadFeed(0, done);
         });
 
         it('done', function() {
-            const feed = document.querySelector('.feed');
-            expect(feed.children.length > 0).toBe(true);
+            let entries = $('.feed .entry');
+            expect(entries.length).toBeGreaterThan(0);
         });
 
     });
-    /* TODO: Write a new test suite named "New Feed Selection" */
+    
+    // Test suite Feed Selection 
 
     describe('New Feed Selection', function() {
-        const feed = document.querySelector('.feed');
-        const fFeed = [];
-        /* TODO: Write a test that ensures when a new feed is loaded
-         * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
-         */
+        let firstFeed, SecondFeed;
+
+        // check that there are 2 feeds
+
+        it('2 feeds', function() {
+            expect(allFeeds.length).toBeGreaterThan(1);
+        });
+
 
          beforeEach(function(done){
-             loadFeed(0);
-             Array.from(feed.children).forEach(function(entry){
-                fFeed.push(entry.innerText);
-             });
-             loadFeed(1, done);
-         });
 
-         it('change', function(){
-            
-             Array.from(feed.children).forEach(function(entry, index){
-                console.log(entry.innertext, fFeed[index], entry.innerText === fFeed[index]);
-                expect(entry.innerText === fFeed[index]).toBe(false);
-                expect(entry.innerText === fFeed[index]);
-             });
-         });
+             loadFeed(1, function() {
+                 firstFeed = $('.feed').html();
+                 loadFeed(0, function(){
+                     secondFeed = $('.feed').html();
+                     done();
+                 });
+            });
+        });
+
+        it('different feeds loaded', function(){
+            expect(firstFeed).not.toBe(secondFeed);
+        });    
     });
 }());
